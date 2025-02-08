@@ -7,12 +7,21 @@
     mc:Ignorable="d"
     Title="PyInstaller GUI">
 
-    <!-- 设置 Grid 的背景 -->
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <TabView>
             <!-- 常规选项页 -->
             <TabViewItem Header="常规选项">
                 <StackPanel Margin="10">
+                    <TextBlock Text="选择 Python 版本：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                    <ComboBox x:Name="PythonVersionComboBox" Margin="0,5,0,10" 
+                              Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
+                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+
+                    <TextBlock Text="选择 PyInstaller 版本：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                    <ComboBox x:Name="PyInstallerVersionComboBox" Margin="0,5,0,10" 
+                              Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
+                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+
                     <TextBlock Text="选择 Python 脚本：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
                     <TextBox x:Name="ScriptPathTextBox" IsReadOnly="True" Margin="0,5,0,10" 
                              Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
@@ -42,11 +51,11 @@
             <!-- 高级选项页 -->
             <TabViewItem Header="高级选项">
                 <StackPanel Margin="10">
-                    <CheckBox x:Name="UpxCheckBox" Content="启用 UPX 压缩" IsChecked="True" Margin="0,5,0,10" 
+                    <CheckBox x:Name="UpxCheckBox" Content="启用 UPX 压缩 (--upx-dir)" IsChecked="True" Margin="0,5,0,10" 
                               Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
-                    <CheckBox x:Name="EncryptCheckBox" Content="启用加密" IsChecked="True" Margin="0,5,0,10" 
+                    <CheckBox x:Name="CleanCheckBox" Content="清理临时文件 (--clean)" IsChecked="True" Margin="0,5,0,10" 
                               Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
-                    <CheckBox x:Name="ObfuscateCheckBox" Content="启用混淆 (PyArmor)" IsChecked="True" Margin="0,5,0,10" 
+                    <CheckBox x:Name="NoConfirmCheckBox" Content="不确认输出目录 (--noconfirm)" IsChecked="True" Margin="0,5,0,10" 
                               Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
                 </StackPanel>
             </TabViewItem>
@@ -54,7 +63,7 @@
             <!-- 额外选项页 -->
             <TabViewItem Header="额外选项">
                 <StackPanel Margin="10">
-                    <TextBlock Text="图标文件：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                    <TextBlock Text="图标文件 (--icon)：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
                     <TextBox x:Name="IconPathTextBox" IsReadOnly="True" Margin="0,5,0,10" 
                              Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
@@ -62,12 +71,12 @@
                             Background="{ThemeResource SystemControlBackgroundBaseLowBrush}" 
                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
 
-                    <TextBlock Text="额外文件 (格式：src_path;dest_path)：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                    <TextBlock Text="额外文件 (--add-data)：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
                     <TextBox x:Name="AddDataTextBox" Margin="0,5,0,10" 
                              Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
 
-                    <TextBlock Text="隐藏导入模块 (逗号分隔)：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                    <TextBlock Text="隐藏导入模块 (--hidden-import)：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
                     <TextBox x:Name="HiddenImportTextBox" Margin="0,5,0,10" 
                              Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />

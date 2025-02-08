@@ -5,8 +5,8 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using Windows.Graphics;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
@@ -18,14 +18,64 @@ namespace Pyinstaller
         public MainWindow()
         {
             this.InitializeComponent();
+            LoadPythonVersions();
+            LoadPyInstallerVersions();
 
-            // 设置窗口大小
-            IntPtr hWnd = WindowNative.GetWindowHandle(this);
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
             WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
             AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
-            appWindow.Resize(new SizeInt32(800, 600));
+            appWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 800, Height = 600 });
         }
 
+        /// <summary>
+        /// 加载系统中安装的 Python 版本
+        /// </summary>
+        private void LoadPythonVersions()
+        {
+            // 扫描系统 PATH 中的 python.exe
+            var paths = Environment.GetEnvironmentVariable("PATH").Split(';');
+            foreach (var path in paths)
+            {
+                if (File.Exists(Path.Combine(path, "python.exe")))
+                {
+                    PythonVersionComboBox.Items.Add(path);
+                }
+            }
+            PythonVersionComboBox.SelectedIndex = 0;
+        }
+
+        /// <summary>
+        /// 加载系统中安装的 PyInstaller 版本
+        /// </summary>
+        private async void LoadPyInstallerVersions()
+        {
+            // 获取 PyInstaller 版本
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "pip",
+                    Arguments = "show pyinstaller",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            process.Start();
+            string output = await process.StandardOutput.ReadToEndAsync();
+            var lines = output.Split('\n');
+            var versionLine = lines.FirstOrDefault(l => l.StartsWith("Version:"));
+            if (versionLine != null)
+            {
+                var version = versionLine.Split(':')[1].Trim();
+                PyInstallerVersionComboBox.Items.Add(version);
+                PyInstallerVersionComboBox.SelectedIndex = 0;
+            }
+        }
+
+        /// <summary>
+        /// 浏览 Python 脚本文件
+        /// </summary>
         private async void BrowseScriptButton_Click(object sender, RoutedEventArgs e)
         {
             var openFilePicker = new FileOpenPicker
@@ -34,12 +84,8 @@ namespace Pyinstaller
                 SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
                 FileTypeFilter = { ".py" }
             };
-
-            // 初始化 FileOpenPicker
-            var hwnd = WindowNative.GetWindowHandle(this);
-            InitializeWithWindow.Initialize(openFilePicker, hwnd);
-
-            // 选择文件
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            WinRT.Interop.InitializeWithWindow.Initialize(openFilePicker, hwnd);
             StorageFile file = await openFilePicker.PickSingleFileAsync();
             if (file != null)
             {
@@ -47,6 +93,9 @@ namespace Pyinstaller
             }
         }
 
+        /// <summary>
+        /// 浏览图标文件
+        /// </summary>
         private async void BrowseIconButton_Click(object sender, RoutedEventArgs e)
         {
             var openFilePicker = new FileOpenPicker
@@ -55,12 +104,8 @@ namespace Pyinstaller
                 SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
                 FileTypeFilter = { ".ico" }
             };
-
-            // 初始化 FileOpenPicker
-            var hwnd = WindowNative.GetWindowHandle(this);
-            InitializeWithWindow.Initialize(openFilePicker, hwnd);
-
-            // 选择文件
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            WinRT.Interop.InitializeWithWindow.Initialize(openFilePicker, hwnd);
             StorageFile file = await openFilePicker.PickSingleFileAsync();
             if (file != null)
             {
@@ -68,6 +113,9 @@ namespace Pyinstaller
             }
         }
 
+        /// <summary>
+        /// 开始打包
+        /// </summary>
         private async void BuildButton_Click(object sender, RoutedEventArgs e)
         {
             string scriptPath = ScriptPathTextBox.Text;
@@ -79,29 +127,7 @@ namespace Pyinstaller
 
             try
             {
-                // 加密
-                if (EncryptCheckBox.IsChecked == true)
-                {
-                    Log("正在加密脚本...");
-                    RunProcess("python", $"encryptor.py \"{scriptPath}\"");
-                    scriptPath = Path.Combine(
-                        Path.GetDirectoryName(scriptPath),
-                        $"run_{Path.GetFileNameWithoutExtension(scriptPath)}.py"
-                    );
-                    Log($"加密完成，使用加载器脚本：{scriptPath}");
-                }
-
-                // 混淆
-                if (ObfuscateCheckBox.IsChecked == true)
-                {
-                    Log("正在混淆脚本...");
-                    RunProcess("pyarmor", $"obfuscate \"{scriptPath}\"");
-                    scriptPath = Path.Combine("dist", Path.GetFileName(scriptPath));
-                    Log($"混淆完成，脚本路径：{scriptPath}");
-                }
-
-                // 打包
-                Log("正在打包为 EXE...");
+                // 构建 PyInstaller 命令
                 string pyinstallerCmd = $"pyinstaller {ModeComboBox.SelectedValue} {ConsoleComboBox.SelectedValue}";
 
                 // 图标文件
@@ -116,7 +142,7 @@ namespace Pyinstaller
                     pyinstallerCmd += $" --add-data \"{AddDataTextBox.Text}\"";
                 }
 
-                // 隐藏导入
+                // 隐藏导入模块
                 if (!string.IsNullOrEmpty(HiddenImportTextBox.Text))
                 {
                     foreach (var module in HiddenImportTextBox.Text.Split(','))
@@ -129,6 +155,18 @@ namespace Pyinstaller
                 if (UpxCheckBox.IsChecked == true)
                 {
                     pyinstallerCmd += " --upx-dir=/path/to/upx";
+                }
+
+                // 清理临时文件
+                if (CleanCheckBox.IsChecked == true)
+                {
+                    pyinstallerCmd += " --clean";
+                }
+
+                // 不确认输出目录
+                if (NoConfirmCheckBox.IsChecked == true)
+                {
+                    pyinstallerCmd += " --noconfirm";
                 }
 
                 pyinstallerCmd += $" \"{scriptPath}\"";
@@ -145,6 +183,9 @@ namespace Pyinstaller
             }
         }
 
+        /// <summary>
+        /// 运行外部进程
+        /// </summary>
         private void RunProcess(string fileName, string arguments)
         {
             var process = new Process
@@ -176,11 +217,17 @@ namespace Pyinstaller
             }
         }
 
+        /// <summary>
+        /// 记录日志
+        /// </summary>
         private void Log(string message)
         {
             LogTextBox.Text += $"{message}\n";
         }
 
+        /// <summary>
+        /// 显示消息对话框
+        /// </summary>
         private async void ShowMessage(string title, string message)
         {
             var dialog = new ContentDialog

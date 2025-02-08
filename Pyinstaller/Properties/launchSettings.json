@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Pyinstaller (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Pyinstaller (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

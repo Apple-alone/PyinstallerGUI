@@ -1,6 +1,6 @@
 # PyInstaller GUI
 
-**PyInstaller GUI** 是一个基于 WinUI 3 的桌面应用程序，用于简化 Python 脚本的打包和加密过程。用户可以通过图形界面选择 Python 和 PyInstaller 版本，配置打包参数，并生成可执行文件。
+**PyInstaller GUI** 是一个基于 WinUI 3 的桌面应用程序，用于简化 Python 脚本的打包，加上我的加密脚本。用户可以通过图形界面选择 Python 和 PyInstaller 版本，配置打包参数，并生成可执行文件。
 
 ## 功能特点
 

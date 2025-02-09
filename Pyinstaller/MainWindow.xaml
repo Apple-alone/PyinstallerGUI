@@ -7,33 +7,46 @@
     mc:Ignorable="d"
     Title="PyInstaller GUI">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TabView>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <!-- 左边区域 -->
+            <ColumnDefinition Width="Auto" />
+            <!-- 右边区域 -->
+        </Grid.ColumnDefinitions>
+
+        <!-- 左边区域：TabView -->
+        <TabView Grid.Column="0">
             <!-- 常规选项页 -->
             <TabViewItem Header="常规选项">
                 <StackPanel Margin="10">
                     <TextBlock Text="选择 Python 版本：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
                     <ComboBox x:Name="PythonVersionComboBox" Margin="0,5,0,10" 
                               Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
-                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                              Width="500" HorizontalAlignment="Left" />
 
                     <TextBlock Text="选择 PyInstaller 版本：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
                     <ComboBox x:Name="PyInstallerVersionComboBox" Margin="0,5,0,10" 
                               Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
-                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                              Width="500" HorizontalAlignment="Left" />
 
                     <TextBlock Text="选择 Python 脚本：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
                     <TextBox x:Name="ScriptPathTextBox" IsReadOnly="True" Margin="0,5,0,10" 
                              Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
-                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                             Width="500" HorizontalAlignment="Left" />
                     <Button Content="浏览..." Click="BrowseScriptButton_Click" Margin="0,0,0,10" 
                             Background="{ThemeResource SystemControlBackgroundBaseLowBrush}" 
-                            Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                            Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                            Width="100" HorizontalAlignment="Left" />
 
                     <TextBlock Text="打包模式：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
                     <ComboBox x:Name="ModeComboBox" Margin="0,5,0,10" 
                               Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
-                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}">
+                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                              Width="500" HorizontalAlignment="Left">
                         <ComboBoxItem Content="单文件 (--onefile)" Tag="--onefile" />
                         <ComboBoxItem Content="多文件 (--onedir)" Tag="--onedir" />
                     </ComboBox>
@@ -41,7 +54,8 @@
                     <TextBlock Text="控制台窗口：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
                     <ComboBox x:Name="ConsoleComboBox" Margin="0,5,0,10" 
                               Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
-                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}">
+                              Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                              Width="500" HorizontalAlignment="Left">
                         <ComboBoxItem Content="显示控制台 (--console)" Tag="--console" />
                         <ComboBoxItem Content="不显示控制台 (--windowed)" Tag="--windowed" />
                     </ComboBox>
@@ -66,32 +80,38 @@
                     <TextBlock Text="图标文件 (--icon)：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
                     <TextBox x:Name="IconPathTextBox" IsReadOnly="True" Margin="0,5,0,10" 
                              Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
-                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                             Width="500" HorizontalAlignment="Left" />
                     <Button Content="浏览..." Click="BrowseIconButton_Click" Margin="0,0,0,10" 
                             Background="{ThemeResource SystemControlBackgroundBaseLowBrush}" 
-                            Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                            Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                            Width="100" HorizontalAlignment="Left" />
 
                     <TextBlock Text="额外文件 (--add-data)：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
                     <TextBox x:Name="AddDataTextBox" Margin="0,5,0,10" 
                              Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
-                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                             Width="500" HorizontalAlignment="Left" />
 
                     <TextBlock Text="隐藏导入模块 (--hidden-import)：" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
                     <TextBox x:Name="HiddenImportTextBox" Margin="0,5,0,10" 
                              Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
-                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                             Width="500" HorizontalAlignment="Left" />
                 </StackPanel>
             </TabViewItem>
         </TabView>
 
-        <!-- 打包按钮和日志输出 -->
-        <StackPanel VerticalAlignment="Bottom" Margin="10">
+        <!-- 右边区域：打包按钮和日志输出 -->
+        <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10,0,0,0">
             <Button Content="开始打包" Click="BuildButton_Click" HorizontalAlignment="Center" Margin="0,10,0,10" 
                     Background="{ThemeResource SystemControlBackgroundBaseLowBrush}" 
-                    Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
-            <TextBox x:Name="LogTextBox" IsReadOnly="True" Height="150" AcceptsReturn="True" TextWrapping="Wrap" 
+                    Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                    Width="200" />
+            <TextBox x:Name="LogTextBox" IsReadOnly="True" Height="500" AcceptsReturn="True" TextWrapping="Wrap" 
                      Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
-                     Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                     Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                     Width="300" HorizontalAlignment="Left" />
         </StackPanel>
     </Grid>
 </Window>
